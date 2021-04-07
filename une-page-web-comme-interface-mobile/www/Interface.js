@@ -11,7 +11,7 @@ export class Interface {
     // Ajout d'un écouteur sur le bouton de connexion
     this.bouton.addEventListener("click", this.gererDemarrage.bind(this));
 
-    // Ajout d'écouteurs sur les événements tactiles et de souris
+    // Ajout d'écouteurs sur les mouvements tactiles et ceux de la souris
     document.body.addEventListener("touchmove", this.gererMouvement.bind(this));
     document.body.addEventListener("mousemove", this.gererMouvement.bind(this));
 
@@ -19,7 +19,7 @@ export class Interface {
 
   gererDemarrage() {
 
-    // Masquage du champ pendant la tentative de connexion
+    // Masquage de la section pendant la tentative de connexion
     document.querySelector("#connexion").style.display = "none";
 
   }
