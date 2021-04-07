@@ -1,6 +1,6 @@
 * {
 
-  /* Désactivation des clics (réactivés plus bas sur les balises pertinentes) */
+  /* Désactivation des clics (réactivé plus bas où c'est nécessaire) */
   pointer-events: none;
   
   /* Désactivation de la sélection du texte des boutons */
@@ -77,4 +77,13 @@ button {
 label {
   display: block;
   margin: 1em auto 0.5em auto;
+}
+
+select {
+  display: block;
+  margin: 0 auto;
+  width: 80%;
+  max-width: 300px;
+  pointer-events: all;
+  font-size: 1em;
 }
