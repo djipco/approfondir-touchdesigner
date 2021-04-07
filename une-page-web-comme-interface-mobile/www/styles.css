@@ -1,6 +1,6 @@
 * {
 
-  /* Désactivation des clics (réactivé plus bas où c'est nécessaire) */
+  /* Désactivation des clics (réactivés plus bas sur les balises pertinentes) */
   pointer-events: none;
   
   /* Désactivation de la sélection du texte des boutons */
