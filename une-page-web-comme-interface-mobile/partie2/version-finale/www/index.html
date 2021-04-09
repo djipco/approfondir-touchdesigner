@@ -1,0 +1,46 @@
+<!doctype html>
+
+<html lang="fr">
+
+  <head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"
+    >
+
+    <title>Interface mobile pour TouchDesigner</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <script type="module">
+      import {Interface} from "./Interface.js";
+      new Interface();
+    </script>
+
+  </head>
+
+  <body>
+
+    <section id="entete">
+      <h1>Interface</h1>
+    </section>
+
+    <section id="connexion">
+      <label for="url">URL pour la connexion:</label>
+      <input id="url" type="text" value="ws://localhost:9980">
+      <button>Connexion!</button>
+    </section>
+
+    <section>
+      <button id="bouton1">Button 1</button>
+      <button id="bouton2">Button 2</button>
+    </section>
+
+    <div id="cible"></div>
+
+  </body>
+
+</html>
