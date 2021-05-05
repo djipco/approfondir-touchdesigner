@@ -8,14 +8,11 @@ export class Interface {
     // Statut de la connexion
     this.connexion = false;
 
-    // Pastille orange
+    // Pastille orange (cible)
     this.cible = document.getElementById("cible");
 
     // Bouton de connexion
     this.bouton = document.querySelector("#connexion > button");
-
-    // Ajout d'un écouteur sur le bouton de connexion
-    this.bouton.addEventListener("click", this.gererDemarrage.bind(this));
 
     // Ajout d'écouteurs sur les événements tactiles et de souris
     document.body.addEventListener("touchmove", this.gererMouvement.bind(this));
@@ -25,24 +22,55 @@ export class Interface {
     document.body.addEventListener("touchstart", this.gererClic.bind(this));
     document.body.addEventListener("touchend", this.gererClic.bind(this));
 
+    // Ajout d'écouteurs sur les événements d'orientation et de mouvement
+    window.addEventListener('deviceorientation', this.gererOrientation.bind(this)); // Gyroscope
+    window.addEventListener('devicemotion', this.gererAcceleration.bind(this));     // Accéléromètre
+
+    // Ajout d'un écouteur sur le bouton de connexion
+    this.bouton.addEventListener("click", this.autoriser.bind(this));
+
+  }
+
+  autoriser(e) {
+
+    // Masquage de la zone de connexion
+    document.querySelector("#connexion").style.display = "none";
+
+    // Vérifier si les événements d'orientation sont disponibles sur cette plateforme
+    if (window.DeviceOrientationEvent && window.DeviceOrientationEvent.requestPermission) {
+
+      // Demande de permission à l'usager pour l'utilisation des événements d'orientation
+      DeviceOrientationEvent.requestPermission()
+      .then(state => {
+        if (state === 'granted') {
+          console.info("L'usager a autorisé l'utilisation des événements d'orientation.");
+          window.addEventListener('deviceorientation', this.gererOrientation.bind(this));
+          window.addEventListener('devicemotion', this.gererAcceleration.bind(this));
+          this.gererDemarrage();
+        }
+      });
+
+    } else {
+      alert("Oups! Votre fureteur ne supporte pas la détection d'orientation.");
+      this.gererDemarrage();
+    }
+
   }
 
   gererDemarrage() {
-
-    // Masquage du champ pendant la tentative de connexion
-    document.querySelector("#connexion").style.display = "none";
 
     // Récupération de l'adresse IP et tentative de connexion
     let url = document.getElementById("url").value;
     this.socket = new WebSocket(url);
 
     // Ajout d'écouteurs sur la connexion
-    this.socket.addEventListener("open", this.gererSucces.bind(this));
-    this.socket.addEventListener("close", this.gererEchec.bind(this));
+    this.socket.addEventListener("open", this.gererOuverture.bind(this));
+    this.socket.addEventListener("close", this.gererFermeture.bind(this));
+    this.socket.addEventListener("error", this.gererErreur.bind(this));
 
   }
 
-  gererSucces(e) {
+  gererOuverture(e) {
 
     // Assignation du statut de la connexion
     this.connexion = true;
@@ -52,16 +80,51 @@ export class Interface {
 
   }
 
-  gererEchec() {
+  gererFermeture() {
 
     // Assignation du statut de la connexion
     this.connexion = false;
 
     // Affichage d'un message à l'usager
-    alert("La connexion au serveur n'a pas pu être établie.")
+    alert("La connexion au serveur a été fermée.")
 
     // Réaffichage de la zone de connexion
     document.querySelector("#connexion").style.display = "block";
+
+  }
+
+  gererErreur() {
+
+    // Assignation du statut de la connexion
+    this.connexion = false;
+
+    // Affichage d'un message à l'usager
+    alert("La connexion au serveur n'a pas pu être établie car une erreur est survenue")
+
+    // Réaffichage de la zone de connexion
+    document.querySelector("#connexion").style.display = "block";
+
+  }
+
+  gererOrientation(e) {
+
+    this.message.alpha = e.alpha;
+    this.message.beta = e.beta;
+    this.message.gamma = e.gamma;
+
+    // Envoi du message au format JSON
+    this.envoyer();
+
+  }
+
+  gererAcceleration(e) {
+    
+    this.message.ax = e.acceleration.x
+    this.message.ay = e.acceleration.x
+    this.message.az = e.acceleration.x
+
+    // Envoi du message au format JSON
+    this.envoyer();
 
   }
 
@@ -80,9 +143,7 @@ export class Interface {
     }
 
     // Envoi du message au format JSON
-    if (this.connexion) {
-      this.socket.send(JSON.stringify(this.message));
-    }
+    this.envoyer();
 
   }
 
@@ -102,15 +163,21 @@ export class Interface {
     this.cible.style.opacity = this.message[cible] ? "1" : "0.6";
 
     // Envoi du message au format JSON
-    if (this.connexion) {
-      this.socket.send(JSON.stringify(this.message));
-    }
+    this.envoyer();
 
   }
 
   deplacerCible(x, y) {
     this.cible.style.left = (x - this.cible.offsetWidth / 2) + "px"
     this.cible.style.top = (y - this.cible.offsetHeight / 2) + "px";
+  }
+
+  envoyer() {
+
+    if (this.connexion) {
+      this.socket.send(JSON.stringify(this.message));
+    }
+
   }
 
 }
